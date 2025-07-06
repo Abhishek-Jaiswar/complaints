@@ -17,7 +17,10 @@ async function connectDb() {
     return cached.conn;
   }
   if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URL).then((mongoose) => mongoose);
+    cached.promise = mongoose.connect(MONGODB_URL).then((mongoose) => {
+      console.log("✅ MongoDB connected");
+      return mongoose;
+    });
   }
   cached.conn = await cached.promise;
   return cached.conn;
