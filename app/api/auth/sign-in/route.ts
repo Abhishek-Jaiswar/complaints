@@ -58,12 +58,12 @@ export async function POST(req: NextRequest) {
       expiresIn: "7d",
     });
 
-    (await cookies()).set({
+    cookies().set({
       name: "token",
       value: token,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      sameSite: "Strict",
       path: "/",
       maxAge: 7 * 24 * 60 * 60, // 7 days
     });
