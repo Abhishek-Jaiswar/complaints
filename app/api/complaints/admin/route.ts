@@ -43,17 +43,23 @@ export async function GET() {
 export async function PUT(req: NextRequest) {
   try {
     await connectDb();
+
     const cookieStore = await cookies();
     const decoded = verifyTokenFromCookies(cookieStore);
 
-    if (decoded?.role !== "admin") {
+    console.log("[AUTH] Decoded Token:", decoded);
+
+    if (!decoded || decoded.role !== "admin") {
       return NextResponse.json(
         { message: "Unauthorized", success: false },
         { status: 401 }
       );
     }
 
-    const { complaintId, status } = await req.json();
+    const body = await req.json();
+    const { complaintId, status } = body;
+
+    console.log("[REQUEST] complaintId:", complaintId, "New status:", status);
 
     if (!complaintId || !status) {
       return NextResponse.json(
@@ -62,6 +68,7 @@ export async function PUT(req: NextRequest) {
       );
     }
 
+    // Update complaint in DB
     const complaint = await Complaints.findByIdAndUpdate(
       complaintId,
       { status },
@@ -75,18 +82,16 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    const userEmail = decoded.email;
-    if (!userEmail) {
-      return NextResponse.json(
-        { message: "User email not found", success: false },
-        { status: 400 }
-      );
-    }
+    console.log("[DB] Complaint updated:", complaint);
 
+    // Prepare email
     const resend = new Resend(process.env.RESEND_API_KEY);
+
+    const userEmail = decoded.email || "admin@example.com";
+
     const { error } = await resend.emails.send({
       from: "onboarding@resend.dev",
-      to: "abhishekndxw@gmail.com", // ✅ Send to the user, not admin but we dont have power to send emails to everyone for now we can send to admin
+      to: 'abhishekndxw@gmail.com', // ⚠️ send to user when ready
       subject: `🔔 Complaint Update: ${complaint.title}`,
       react: ComplaintNotificationEmail({
         mode: "updated",
@@ -100,16 +105,18 @@ export async function PUT(req: NextRequest) {
     });
 
     if (error) {
-      console.error("Error sending email:", error);
+      console.error("[EMAIL] Failed to send:", error);
+    } else {
+      console.log("[EMAIL] Sent successfully");
     }
 
     return NextResponse.json({
-      message: "Complaint updated and email sent",
+      message: "Complaint updated & email sent",
       success: true,
       complaint,
     });
   } catch (error) {
-    console.error("Update error:", error);
+    console.error("[SERVER ERROR]", error);
     return NextResponse.json(
       { message: "Internal server error", success: false },
       { status: 500 }

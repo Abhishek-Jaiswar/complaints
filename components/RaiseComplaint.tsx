@@ -5,6 +5,17 @@ import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+  SelectGroup,
+  SelectLabel,
+} from "@/components/ui/select"
+
+
 const RaiseComplaint = () => {
   const [formData, setFormData] = useState({
     title: "",
@@ -95,26 +106,31 @@ const RaiseComplaint = () => {
           />
         </div>
 
+
         <div>
           <label className="block text-sm font-medium mb-1" htmlFor="category">
             Category
           </label>
-          <select
-            id="category"
-            name="category"
+
+          <Select
             value={formData.category}
-            onChange={handleChange}
-            className="w-full border border-gray-300 rounded-md px-3 py-2"
-            required
-          >
-            <option value="">Select category</option>
-            <option value="product">Product</option>
-            <option value="service">Service</option>
-            <option value="support">Support</option>
-            <option value="billing">Billing</option>
-            <option value="technical">Technical</option>
-          </select>
+            onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Category</SelectLabel>
+                <SelectItem value="product">Product</SelectItem>
+                <SelectItem value="service">Service</SelectItem>
+                <SelectItem value="support">Support</SelectItem>
+                <SelectItem value="billing">Billing</SelectItem>
+                <SelectItem value="technical">Technical</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
+
 
         <div>
           <label className="block text-sm font-medium mb-2">Priority</label>
