@@ -1,4 +1,4 @@
-// ✅ helper: libs/verifyToken.ts
+
 import jwt from "jsonwebtoken";
 import type { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
@@ -10,9 +10,7 @@ export interface TokenPayload {
   exp: number;
 }
 
-export function verifyToken(cookieStore: ReadonlyRequestCookies): TokenPayload | null {
-  const token = cookieStore.get("token")?.value;
-
+export function verifyJwt(token: string | undefined): TokenPayload | null {
   if (!token) return null;
 
   try {
@@ -24,4 +22,9 @@ export function verifyToken(cookieStore: ReadonlyRequestCookies): TokenPayload |
   } catch {
     return null;
   }
+}
+
+export function verifyTokenFromCookies(cookieStore: ReadonlyRequestCookies): TokenPayload | null {
+  const token = cookieStore.get("token")?.value;
+  return verifyJwt(token);
 }
