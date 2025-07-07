@@ -35,6 +35,7 @@ const Hero = () => {
           width={600}
           height={600}
           className="w-full h-auto rounded-2xl"
+          priority={true}
         />
       </div>
     </section>
