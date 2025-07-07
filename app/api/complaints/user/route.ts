@@ -1,6 +1,6 @@
 import ComplaintNotificationEmail from "@/app/components/email-template";
-import connectDb from "@/libs/database";
-import { verifyToken } from "@/libs/verifyToken";
+import connectDb from "@/lib/database";
+import { verifyTokenFromCookies } from "@/helpers/verifyToken";
 import { Complaints } from "@/models/complaints";
 // import { User } from "@/models/user";
 import { cookies } from "next/headers";
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     await connectDb();
 
     const cookieStore = await cookies();
-    const decoded = verifyToken(cookieStore);
+    const decoded = verifyTokenFromCookies(cookieStore);
     if (!decoded) {
       return NextResponse.json(
         {

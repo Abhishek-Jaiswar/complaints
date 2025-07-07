@@ -1,6 +1,6 @@
 import ComplaintNotificationEmail from "@/app/components/email-template";
-import connectDb from "@/libs/database";
-import { verifyToken } from "@/libs/verifyToken";
+import connectDb from "@/lib/database";
+import { verifyTokenFromCookies } from "@/helpers/verifyToken";
 import { Complaints } from "@/models/complaints";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
@@ -11,7 +11,7 @@ export async function GET() {
     await connectDb();
 
     const cookieStore = await cookies();
-    const decoded = verifyToken(cookieStore);
+    const decoded = verifyTokenFromCookies(cookieStore);
     if (decoded?.role !== "admin") {
       return NextResponse.json(
         {
@@ -44,7 +44,7 @@ export async function PUT(req: NextRequest) {
   try {
     await connectDb();
     const cookieStore = await cookies();
-    const decoded = verifyToken(cookieStore);
+    const decoded = verifyTokenFromCookies(cookieStore);
 
     if (decoded?.role !== "admin") {
       return NextResponse.json(
