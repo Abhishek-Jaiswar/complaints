@@ -2,13 +2,11 @@ import connectDb from "@/lib/database";
 import { Complaints } from "@/models/complaints";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  req: NextRequest,
-) {
+export async function GET(req: NextRequest) {
   try {
     await connectDb();
     const url = new URL(req.url);
-    const id = url.pathname.split('/').pop();
+    const id = url.pathname.split("/").pop();
 
     if (!id) {
       return NextResponse.json(
@@ -36,12 +34,10 @@ export async function GET(
   }
 }
 
-export async function DELETE(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest) {
   await connectDb();
-  const { id } = context.params;
+  const url = new URL(req.url);
+  const id = url.pathname.split("/").pop();
   await Complaints.findByIdAndDelete(id);
   return NextResponse.json({ success: true });
 }
