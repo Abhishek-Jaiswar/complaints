@@ -1,48 +1,54 @@
 'use client'
 
-import React, { FormEvent, useState } from 'react'
+import React, { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import Link from "next/link"
-import { useRouter } from 'next/navigation'
 import axios from 'axios'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Loader2 } from 'lucide-react'
+import { useAuth } from '@/context/authContext'
 
-const SignUp = () => {
+
+const SignIn = () => {
     const [formData, setFormData] = useState({
-        name: "",
         email: "",
-        password: ""
+        password: "",
+        context: "admin",
     })
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
+    const { fetchUser } = useAuth()
     const navigate = useRouter()
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }))
     }
 
-    const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault()
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
         try {
-            setLoading(true)
-            const response = await axios.post("/api/auth/sign-up", formData, {
+            setLoading(true);
+            const response = await axios.post('/api/auth/sign-in', formData, {
                 withCredentials: true
             })
 
+            await fetchUser()
+
             if (response.status === 201) {
-                navigate.push('/sign-in')
-                toast.success("Registration successfull")
+                navigate.push('/admin/dashboard')
+                toast.success("Logged in successfully")
+
             } else if (response.status === 200 && response.data.success) {
-                navigate.push('/sign-in')
-                toast.success("Registration successfull")
+                navigate.push('/admin/dashboard')
+                toast.success("Logged in successfully")
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                toast.error(error.response?.data.message || "Registration failed")
+                toast.error(error.response?.data?.message || "Failed to sign up");
             } else {
-                toast.error("Something went wrong")
+                toast.error("Something went wrong");
             }
         } finally {
             setLoading(false)
@@ -53,33 +59,23 @@ const SignUp = () => {
         <div className="flex items-center justify-center h-screen">
             <div>
                 <div className="pb-3">
-                    <h1 className="text-lg text-neutral-900 font-semibold">Create your account</h1>
+                    <h1 className="text-lg text-neutral-900 font-semibold">Administrations login</h1>
                     <p className="text-sm text-neutral-700">
                         Enter your email below to login to your account
                     </p>
                 </div>
                 <div>
-                    <form onSubmit={handleSubmit}>
+                    <form
+                        onSubmit={handleSubmit}
+                    >
                         <div className="flex flex-col gap-2">
-                            <div className="grid gap-3">
-                                <label htmlFor="email">Name</label>
-                                <Input
-                                    id="name"
-                                    type="text"
-                                    name='name'
-                                    value={formData.name.toLowerCase()}
-                                    onChange={handleChange}
-                                    placeholder="john"
-                                    required
-                                />
-                            </div>
                             <div className="grid gap-3">
                                 <label htmlFor="email">Email</label>
                                 <Input
                                     id="email"
                                     type="email"
                                     name='email'
-                                    value={formData.email}
+                                    value={formData.email.toLowerCase()}
                                     onChange={handleChange}
                                     placeholder="m@example.com"
                                     required
@@ -90,26 +86,25 @@ const SignUp = () => {
                                     <label htmlFor="password">Password</label>
                                 </div>
                                 <Input
-                                    id="password" type="password"
+                                    id="password"
+                                    type="password"
                                     name='password'
-                                    value={formData.password}
+                                    value={formData.password.toLowerCase()}
                                     onChange={handleChange}
-                                    required />
+                                    required
+                                />
                             </div>
                             <div className="flex flex-col pt-6">
-                                <Button type="submit" className="w-full cursor-pointer">
+                                <Button
+                                    type="submit" className="w-full cursor-pointer"
+                                    disabled={loading}
+                                >
                                     {loading ? <span className='flex items-center justify-center gap-2'>
-                                        <Loader2 className='w-4 h-4 animate-spin' />
+                                        <Loader2 className='w-4 h-4 animate-spin ' />
                                         Please wait...
-                                    </span> : " Sign up"}
+                                    </span> : " Sign in"}
                                 </Button>
                             </div>
-                        </div>
-                        <div className="mt-4 text-center text-sm">
-                            Allready have an account?{" "}
-                            <Link href={'/sign-in'} className="underline underline-offset-4">
-                                Sign in
-                            </Link>
                         </div>
                     </form>
                 </div>
@@ -118,4 +113,4 @@ const SignUp = () => {
     )
 }
 
-export default SignUp
+export default SignIn

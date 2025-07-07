@@ -9,9 +9,9 @@ export async function POST(req: NextRequest) {
   try {
     await connectDb();
 
-    const { email, password } = await req.json();
+    const { email, password, context } = await req.json();
 
-    if (!email || !password) {
+    if (!email || !password || !context) {
       return NextResponse.json(
         { message: "Please fill all the required details!", success: false },
         { status: 400 }
@@ -23,6 +23,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { message: "Invalid credentials", success: false },
         { status: 401 }
+      );
+    }
+
+    if (context === "user" && user.role === "admin") {
+      return NextResponse.json(
+        { message: "Admins must sign in through the admin portal" },
+        { status: 403 }
+      );
+    }
+
+    if (context === "admin" && user.role !== "admin") {
+      return NextResponse.json(
+        { message: "This is an admin login only" },
+        { status: 403 }
       );
     }
 
@@ -49,7 +63,7 @@ export async function POST(req: NextRequest) {
       value: token,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "lax",
       path: "/",
       maxAge: 7 * 24 * 60 * 60, // 7 days
     });

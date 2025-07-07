@@ -5,7 +5,7 @@ export interface IComplaints extends Document {
   description: string;
   category: string;
   priority: string;
-  status: string;
+  status?: string;
   dateSubmitted: Date;
 }
 

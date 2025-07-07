@@ -1,4 +1,3 @@
-
 import jwt from "jsonwebtoken";
 import type { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
@@ -15,16 +14,21 @@ export function verifyJwt(token: string | undefined): TokenPayload | null {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+    console.log("@@Decoded: ", decoded);
+
     if (typeof decoded === "object" && decoded !== null) {
       return decoded as TokenPayload;
     }
     return null;
-  } catch {
+  } catch (err) {
+    console.error("JWT verify error:", err);
     return null;
   }
 }
 
-export function verifyTokenFromCookies(cookieStore: ReadonlyRequestCookies): TokenPayload | null {
+export function verifyTokenFromCookies(
+  cookieStore: ReadonlyRequestCookies
+): TokenPayload | null {
   const token = cookieStore.get("token")?.value;
   return verifyJwt(token);
 }

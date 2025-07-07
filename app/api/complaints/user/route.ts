@@ -2,7 +2,6 @@ import ComplaintNotificationEmail from "@/app/components/email-template";
 import connectDb from "@/lib/database";
 import { verifyTokenFromCookies } from "@/helpers/verifyToken";
 import { Complaints } from "@/models/complaints";
-// import { User } from "@/models/user";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
@@ -23,7 +22,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { title, description, category, priority, status } = await req.json();
+    const {
+      title,
+      description,
+      category,
+      priority,
+      status
+    } = await req.json();
+    console.log("Incoming complaint:", title, description, category, priority, status);
+
 
     if (!title || !description || !category || !priority || !status) {
       return NextResponse.json(
