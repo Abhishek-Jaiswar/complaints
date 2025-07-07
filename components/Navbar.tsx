@@ -52,7 +52,7 @@ export default function Navbar() {
                                 Please wait...
                             </span> : " Logout"}</Button>
                         {user.role === 'admin' && (
-                            <Link href={'/admin/dashbaord'}>
+                            <Link href={'/admin/dashboard'}>
                                 <Button className="hover:bg-rose-600 transition-colors duration-200 cursor-pointer">
                                     Dashboard
                                 </Button>

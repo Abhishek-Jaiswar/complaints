@@ -18,7 +18,7 @@ interface ComplaintEmailProps {
     description: string;
     category: string;
     priority: string;
-    status: string;
+    status: string; 
     userEmail: string;
 }
 
