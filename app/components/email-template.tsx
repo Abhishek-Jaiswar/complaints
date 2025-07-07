@@ -13,6 +13,7 @@ import {
 } from '@react-email/components';
 
 interface ComplaintEmailProps {
+    mode: 'created' | 'updated';
     title: string;
     description: string;
     category: string;
@@ -26,156 +27,156 @@ const baseUrl = process.env.VERCEL_URL
     : '';
 
 export const ComplaintNotificationEmail = ({
-    title = "Payment Gateway Issue",
-    description = "I'm experiencing difficulties with the payment processing system. The transaction fails at the final step and shows an error message.",
-    category = "Technical",
-    priority = "High",
-    status = "Open",
-    userEmail = "user@example.com"
-}: ComplaintEmailProps) => (
-    <Html>
-        <Head />
-        <Body style={main}>
-            <Preview>New complaint received - {title}</Preview>
-            <Container style={container}>
+    mode,
+    title,
+    description,
+    category,
+    priority,
+    status,
+    userEmail,
+}: ComplaintEmailProps) => {
+    const isCreated = mode === 'created';
 
-                {/* Header Section */}
-                <Section style={header}>
-                    <Row>
-                        <Column>
-                            <Text style={headerTitle}>ComplaintHub</Text>
-                            <Text style={headerSubtitle}>Admin Dashboard</Text>
-                        </Column>
-                        <Column style={headerRight}>
-                            <div style={alertBadge}>
-                                <Text style={alertText}>NEW COMPLAINT</Text>
-                            </div>
-                        </Column>
-                    </Row>
-                </Section>
-
-                {/* Priority Banner */}
-                <Section style={getPriorityBanner(priority)}>
-                    <Text style={priorityText}>
-                        🚨 {priority.toUpperCase()} PRIORITY COMPLAINT
-                    </Text>
-                </Section>
-
-                {/* Main Content */}
-                <Section style={content}>
-                    <Text style={mainHeading}>New Complaint Received</Text>
-                    <Text style={introText}>
-                        A new complaint has been submitted and requires your attention.
-                    </Text>
-
-                    <Hr style={hr} />
-
-                    {/* Complaint Details */}
-                    <Section style={detailsSection}>
-                        <Text style={sectionTitle}>Complaint Details</Text>
-
-                        <Row style={detailRow}>
-                            <Column style={labelColumn}>
-                                <Text style={label}>Title:</Text>
-                            </Column>
-                            <Column style={valueColumn}>
-                                <Text style={value}>{title}</Text>
-                            </Column>
-                        </Row>
-
-                        <Row style={detailRow}>
-                            <Column style={labelColumn}>
-                                <Text style={label}>Category:</Text>
-                            </Column>
-                            <Column style={valueColumn}>
-                                <div style={getCategoryBadge()}>
-                                    <Text style={badgeText}>{category}</Text>
-                                </div>
-                            </Column>
-                        </Row>
-
-                        <Row style={detailRow}>
-                            <Column style={labelColumn}>
-                                <Text style={label}>Priority:</Text>
-                            </Column>
-                            <Column style={valueColumn}>
-                                <div style={getPriorityBadge(priority)}>
-                                    <Text style={badgeText}>{priority}</Text>
-                                </div>
-                            </Column>
-                        </Row>
-
-                        <Row style={detailRow}>
-                            <Column style={labelColumn}>
-                                <Text style={label}>Status:</Text>
-                            </Column>
-                            <Column style={valueColumn}>
-                                <div style={getStatusBadge(status)}>
-                                    <Text style={badgeText}>{status}</Text>
-                                </div>
-                            </Column>
-                        </Row>
-
-                        <Row style={detailRow}>
-                            <Column style={labelColumn}>
-                                <Text style={label}>User Email:</Text>
-                            </Column>
-                            <Column style={valueColumn}>
-                                <Link href={`mailto:${userEmail}`} style={emailLink}>
-                                    {userEmail}
-                                </Link>
-                            </Column>
-                        </Row>
-                    </Section>
-
-                    <Hr style={hr} />
-
-                    {/* Description */}
-                    <Section style={descriptionSection}>
-                        <Text style={sectionTitle}>Description</Text>
-                        <div style={descriptionBox}>
-                            <Text style={descriptionText}>{description}</Text>
-                        </div>
-                    </Section>
-
-                    <Hr style={hr} />
-
-                    {/* Action Buttons */}
-                    <Section style={actionSection}>
-                        <Text style={sectionTitle}>Quick Actions</Text>
+    return (
+        <Html>
+            <Head />
+            <Body style={main}>
+                <Preview>
+                    {isCreated ? 'New Complaint Received' : 'Complaint Updated'} - {title}
+                </Preview>
+                <Container style={container}>
+                    {/* Header */}
+                    <Section style={header}>
                         <Row>
-                            <Column style={buttonColumn}>
-                                <Link href={`${baseUrl}/admin/complaints`} style={primaryButton}>
-                                    <Text style={primaryButtonText}>View in Dashboard</Text>
-                                </Link>
-                            </Column>
-                            <Column style={buttonColumn}>
-                                <Link href={`mailto:${userEmail}`} style={secondaryButton}>
-                                    <Text style={secondaryButtonText}>Reply to User</Text>
-                                </Link>
+                            <Column>
+                                <Text style={headerTitle}>
+                                    {isCreated ? 'New Complaint Raised' : 'Complaint Updated'}
+                                </Text>
                             </Column>
                         </Row>
                     </Section>
-                </Section>
 
-                {/* Footer */}
-                <Section style={footer}>
-                    <Hr style={footerHr} />
-                    <Text style={footerText}>
-                        This is an automated notification from your ComplaintHub system.
-                    </Text>
-                    <Text style={footerText}>
-                        © 2025 ComplaintHub. All rights reserved.
-                    </Text>
-                    <Text style={footerSubtext}>
-                        You received this email because you are an administrator of the complaint management system.
-                    </Text>
-                </Section>
+                    {/* Priority Banner */}
+                    <Section style={getPriorityBanner(priority)}>
+                        <Text style={priorityText}>
+                            🚨 {priority.toUpperCase()} PRIORITY
+                        </Text>
+                    </Section>
 
-            </Container>
-        </Body>
-    </Html>
-);
+                    {/* Main */}
+                    <Section style={content}>
+                        <Text style={mainHeading}>
+                            {isCreated ? 'A new complaint has been raised' : 'A complaint has been updated'}
+                        </Text>
+                        <Text style={introText}>
+                            Please check the details below and take the necessary action.
+                        </Text>
+
+                        <Hr style={hr} />
+
+                        {/* Details */}
+                        <Section style={detailsSection}>
+                            <Text style={sectionTitle}>Complaint Details</Text>
+
+                            <Row style={detailRow}>
+                                <Column style={labelColumn}>
+                                    <Text style={label}>Title:</Text>
+                                </Column>
+                                <Column style={valueColumn}>
+                                    <Text style={value}>{title}</Text>
+                                </Column>
+                            </Row>
+
+                            <Row style={detailRow}>
+                                <Column style={labelColumn}>
+                                    <Text style={label}>Category:</Text>
+                                </Column>
+                                <Column style={valueColumn}>
+                                    <div style={getCategoryBadge()}>
+                                        <Text style={badgeText}>{category}</Text>
+                                    </div>
+                                </Column>
+                            </Row>
+
+                            <Row style={detailRow}>
+                                <Column style={labelColumn}>
+                                    <Text style={label}>Priority:</Text>
+                                </Column>
+                                <Column style={valueColumn}>
+                                    <div style={getPriorityBadge(priority)}>
+                                        <Text style={badgeText}>{priority}</Text>
+                                    </div>
+                                </Column>
+                            </Row>
+
+                            <Row style={detailRow}>
+                                <Column style={labelColumn}>
+                                    <Text style={label}>Status:</Text>
+                                </Column>
+                                <Column style={valueColumn}>
+                                    <div style={getStatusBadge(status)}>
+                                        <Text style={badgeText}>{status}</Text>
+                                    </div>
+                                </Column>
+                            </Row>
+
+                            <Row style={detailRow}>
+                                <Column style={labelColumn}>
+                                    <Text style={label}>User Email:</Text>
+                                </Column>
+                                <Column style={valueColumn}>
+                                    <Link href={`mailto:${userEmail}`} style={emailLink}>
+                                        {userEmail}
+                                    </Link>
+                                </Column>
+                            </Row>
+                        </Section>
+
+                        <Hr style={hr} />
+
+                        {/* Description */}
+                        <Section style={descriptionSection}>
+                            <Text style={sectionTitle}>Description</Text>
+                            <div style={descriptionBox}>
+                                <Text style={descriptionText}>{description}</Text>
+                            </div>
+                        </Section>
+
+                        <Hr style={hr} />
+
+                        {/* Actions */}
+                        <Section style={actionSection}>
+                            <Text style={sectionTitle}>Quick Actions</Text>
+                            <Row>
+                                <Column style={buttonColumn}>
+                                    <Link href={`${baseUrl}/admin/complaints`} style={primaryButton}>
+                                        <Text style={primaryButtonText}>Open Dashboard</Text>
+                                    </Link>
+                                </Column>
+                                <Column style={buttonColumn}>
+                                    <Link href={`mailto:${userEmail}`} style={secondaryButton}>
+                                        <Text style={secondaryButtonText}>Reply to User</Text>
+                                    </Link>
+                                </Column>
+                            </Row>
+                        </Section>
+                    </Section>
+
+                    {/* Footer */}
+                    <Section style={footer}>
+                        <Hr style={footerHr} />
+                        <Text style={footerText}>
+                            This is an automated notification from ComplaintHub.
+                        </Text>
+                        <Text style={footerSubtext}>
+                            &copy; 2025 ComplaintHub. All rights reserved.
+                        </Text>
+                    </Section>
+                </Container>
+            </Body>
+        </Html>
+    );
+};
 
 // Helper functions for dynamic styling
 const getPriorityBanner = (priority: string) => {
@@ -191,47 +192,51 @@ const getPriorityBanner = (priority: string) => {
 };
 
 const getPriorityBadge = (priority: string) => {
-    const colors = {
-        High: '#fee2e2',
-        Medium: '#fef3c7',
-        Low: '#d1fae5'
-    };
-    const textColors = {
-        High: '#991b1b',
-        Medium: '#92400e',
-        Low: '#065f46'
-    };
-    return {
-        ...badge,
-        backgroundColor: colors[priority as keyof typeof colors] || colors.Medium,
-        color: textColors[priority as keyof typeof textColors] || textColors.Medium
-    };
+  const colors = {
+    High: '#fee2e2',
+    Medium: '#fef3c7',
+    Low: '#d1fae5',
+  };
+
+  const textColors = {
+    High: '#991b1b',
+    Medium: '#92400e',
+    Low: '#065f46',
+  };
+
+  return {
+    ...badge,
+    backgroundColor: colors[priority as keyof typeof colors] || '#fef3c7', 
+    color: textColors[priority as keyof typeof textColors] || '#92400e',  
+  };
 };
 
 const getCategoryBadge = () => ({
-    ...badge,
-    backgroundColor: '#e0e7ff',
-    color: '#3730a3'
+  ...badge,
+  backgroundColor: '#e0e7ff',
+  color: '#3730a3',
 });
 
 const getStatusBadge = (status: string) => {
-    const colors = {
-        Open: '#dbeafe',
-        'In Progress': '#fef3c7',
-        Resolved: '#d1fae5',
-        Closed: '#f3f4f6'
-    };
-    const textColors = {
-        Open: '#1e40af',
-        'In Progress': '#92400e',
-        Resolved: '#065f46',
-        Closed: '#374151'
-    };
-    return {
-        ...badge,
-        backgroundColor: colors[status as keyof typeof colors] || colors.Open,
-        color: textColors[status as keyof typeof textColors] || textColors.Open
-    };
+  const colors = {
+    Pending: '#dbeafe',
+    'In Progress': '#fef3c7',
+    Resolved: '#d1fae5',
+    Closed: '#f3f4f6',
+  };
+
+  const textColors = {
+    Pending: '#1e40af',
+    'In Progress': '#92400e',
+    Resolved: '#065f46',
+    Closed: '#374151',
+  };
+
+  return {
+    ...badge,
+    backgroundColor: colors[status as keyof typeof colors] || '#dbeafe',
+    color: textColors[status as keyof typeof textColors] || '#1e40af',
+  };
 };
 
 export default ComplaintNotificationEmail;
@@ -263,30 +268,6 @@ const headerTitle = {
     fontWeight: '700',
     color: '#ffffff',
     margin: '0 0 4px 0',
-};
-
-const headerSubtitle = {
-    fontSize: '14px',
-    color: '#94a3b8',
-    margin: '0',
-};
-
-const headerRight = {
-    textAlign: 'right' as const,
-};
-
-const alertBadge = {
-    backgroundColor: '#ef4444',
-    borderRadius: '6px',
-    padding: '6px 12px',
-    display: 'inline-block',
-};
-
-const alertText = {
-    fontSize: '12px',
-    fontWeight: '600',
-    color: '#ffffff',
-    margin: '0',
 };
 
 const priorityBanner = {
