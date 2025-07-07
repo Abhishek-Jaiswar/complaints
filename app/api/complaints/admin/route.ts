@@ -94,7 +94,7 @@ export async function PUT(req: NextRequest) {
         description: complaint.description,
         category: complaint.category,
         priority: complaint.priority,
-        status: complaint.status,
+        status: complaint.status || "Unknown",
         userEmail: userEmail,
       }),
     });
