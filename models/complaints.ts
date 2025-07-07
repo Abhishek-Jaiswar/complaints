@@ -21,6 +21,19 @@ const complaintSchema: Schema<IComplaints> = new Schema(
     },
     category: {
       type: String,
+      enum: [
+        "product",
+        "service",
+        "support",
+        "billing",
+        "technical",
+        "account",
+        "payment",
+        "delivery",
+        "refund",
+        "feedback",
+        "other",
+      ],
       required: true,
     },
     priority: {

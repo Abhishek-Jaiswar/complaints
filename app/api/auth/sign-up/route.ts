@@ -12,6 +12,7 @@ export async function POST(req: NextRequest) {
     if (!name || !email || !password) {
       return NextResponse.json({
         message: "Please fill all the required details!",
+        success: false
       }, {status: 400});
     }
 
@@ -42,11 +43,11 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
+    console.error("Sign-up error: ", error)
     return NextResponse.json(
       {
         message: "Internal server error",
         success: false,
-        Error: error
       },
       { status: 500 }
     );
