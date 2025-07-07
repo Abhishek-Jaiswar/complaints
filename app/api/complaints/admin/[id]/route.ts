@@ -4,11 +4,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  context: { params: { id: string } }
 ) {
   try {
     await connectDb();
-    const { id } = await context.params;
+    const url = new URL(req.url);
+    const id = url.pathname.split('/').pop();
 
     if (!id) {
       return NextResponse.json(
