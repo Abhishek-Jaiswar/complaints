@@ -1,20 +1,23 @@
-'use client'
+'use client';
 
-import React, { useState, useMemo, useEffect } from 'react'
-import OperationsOnTable from '@/components/OperationsOnTable'
-import DataTable from '@/components/DataTable'
-import axios from 'axios'
+import React, { useEffect, useMemo, useState } from 'react';
+import OperationsOnTable from '@/components/OperationsOnTable';
+import DataTable from '@/components/DataTable';
+import axios from 'axios';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 interface IComplaint {
+  _id: string;
   title: string;
   description: string;
   status: string;
   priority: string;
   createdAt: string;
-  _id: string;
 }
 
-const Dashboard = () => {
+export default function Dashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [status, setStatus] = useState('');
   const [priority, setPriority] = useState('');
@@ -23,8 +26,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchComplaints = async () => {
       const res = await axios.get('/api/complaints/admin');
-      const data = await res.data.complaints;
-      setComplaints(data);
+      setComplaints(res.data.complaints);
     };
     fetchComplaints();
   }, []);
@@ -32,42 +34,50 @@ const Dashboard = () => {
   const filteredComplaints = useMemo(() => {
     return complaints.filter(item => {
       const matchesSearch =
-        item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.description?.toLowerCase().includes(searchTerm.toLowerCase())
+        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = status ? item.status === status : true;
+      const matchesPriority = priority ? item.priority === priority : true;
+      return matchesSearch && matchesStatus && matchesPriority;
+    });
+  }, [complaints, searchTerm, status, priority]);
 
-      const matchesStatus = status ? item.status.toLowerCase() === status.toLowerCase() : true;
-      const matchesPriority = priority ? item.priority.toLowerCase() === priority.toLowerCase() : true;
-
-      return matchesSearch && matchesStatus && matchesPriority
-    })
-  }, [complaints, searchTerm, status, priority])
+  const handleDelete = async (id: string) => {
+    try {
+      await axios.delete(`/api/complaints/admin/${id}`);
+      setComplaints(prev => prev.filter(item => item._id !== id));
+      toast.success("Deleted successfully");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete");
+    }
+  };
 
   return (
-    <div className='container max-w-7xl mx-auto p-4'>
-      <div className='px-4 py-4 border border-neutral-200 rounded-md'>
-        <h1 className='text-xl font-bold text-neutral-600'>Manage complaints raised by users</h1>
+    <div className="container max-w-7xl mx-auto p-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 px-4 py-4 border border-neutral-200 rounded-md">
+        <h1 className="text-xl font-bold text-neutral-800">
+          📋 Admin Dashboard — Manage Complaints
+        </h1>
+        <Button asChild>
+          <Link href="/">Back to Home</Link>
+        </Button>
       </div>
-      <section className='mt-10'>
-        <h1 className='text-xl font-semibold text-neutral-600'>Complaints ({filteredComplaints.length})</h1>
-        <div className='py-1 mt-5'>
-          <p className='text-rose-600 border-b-2 border-neutral-200'>General complaints</p>
-        </div>
-      </section>
-      <section>
-        <OperationsOnTable
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          status={status}
-          setStatus={setStatus}
-          priority={priority}
-          setPriority={setPriority}
-        />
-      </section>
-      <section>
-        <DataTable complaints={filteredComplaints} />
-      </section>
-    </div>
-  )
-}
 
-export default Dashboard
+      <OperationsOnTable
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        status={status}
+        setStatus={setStatus}
+        priority={priority}
+        setPriority={setPriority}
+      />
+      <DataTable complaints={filteredComplaints} onDelete={handleDelete} />
+      <div className='mt-5'>
+        <p className="text-sm text-neutral-600 mt-1">
+          Total complaints: <strong>{complaints.length}</strong> — Showing: <strong>{filteredComplaints.length}</strong>
+        </p>
+      </div>
+    </div>
+  );
+}

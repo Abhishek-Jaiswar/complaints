@@ -22,15 +22,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const {
+    const { title, description, category, priority, status } = await req.json();
+    console.log(
+      "Incoming complaint:",
       title,
       description,
       category,
       priority,
       status
-    } = await req.json();
-    console.log("Incoming complaint:", title, description, category, priority, status);
-
+    );
 
     if (!title || !description || !category || !priority || !status) {
       return NextResponse.json(
@@ -94,7 +94,7 @@ export async function POST(req: NextRequest) {
         priority,
         status,
         userEmail,
-        mode: "updated",
+        mode: "created",
       }),
     });
 
