@@ -6,7 +6,7 @@ This project uses [Resend](https://resend.com/) to send transactional emails whe
 
 ## **Why I Chose Resend**
 
-I chose **Resend** because it provides a simple, modern, developer-friendly API for sending transactional emails — without complex SMTP setup or deliverability headaches.
+I chose **Resend** because it provides a simple, modern, developer-friendly API for sending transactional emails.
 
 **Key reasons:**
 
