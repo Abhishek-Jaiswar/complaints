@@ -1,17 +1,17 @@
-# 🗂️ Database Connection
+#  Database Connection
 
 This project uses **MongoDB** with Mongoose to store and manage complaints and user data.
 
 ---
 
-## ✅ **How it works**
+## **How it works**
 
 - Mongoose is used for defining models (`User`, `Complaint`).
 - A `connectDb` helper function is used to ensure a single DB connection.
 
 ---
 
-## ✅ **Setup**
+## **Setup**
 
 1. **Create a MongoDB Atlas account (recommended)**  
    [https://www.mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas)
@@ -32,7 +32,7 @@ MONGODB_URI=your_mongodb_uri_here
 
 ---
 
-## ✅ **Connect your DB**
+## **Connect your DB**
 
 `/lib/database.ts`:
 
@@ -56,7 +56,7 @@ async function connectDb() {
   }
   if (!cached.promise) {
     cached.promise = mongoose.connect(MONGODB_URL).then((mongoose) => {
-      console.log("✅ MongoDB connected");
+      console.log("MongoDB connected");
       return mongoose;
     });
   }
@@ -69,7 +69,7 @@ export default connectDb;
 
 ---
 
-## ✅ **Explanation**
+## **Explanation**
 
 In the above **`/lib/database.ts`** connection utility, I’m using **Mongoose** to connect to a MongoDB database.  
 Here’s how it works and why it’s written this way:
@@ -89,7 +89,7 @@ This pattern is widely used for **Next.js apps**.
 
 ---
 
-## ✅ **Use it in API routes**
+## **Use it in API routes**
 
 Example in `route.ts`:
 
