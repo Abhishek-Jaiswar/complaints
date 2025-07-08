@@ -3,7 +3,6 @@ import { User } from "@/models/user";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import JWT from "jsonwebtoken";
-import { cookies } from "next/headers";
 
 export async function POST(req: NextRequest) {
   try {
@@ -58,20 +57,20 @@ export async function POST(req: NextRequest) {
       expiresIn: "7d",
     });
 
-    cookies().set({
+    const response = NextResponse.json(
+      { message: "Login successful", success: true },
+      { status: 200 }
+    );
+    response.cookies.set({
       name: "token",
       value: token,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
+      sameSite: "strict",
       path: "/",
-      maxAge: 7 * 24 * 60 * 60, // 7 days
+      maxAge: 7 * 24 * 60 * 60,
     });
-
-    return NextResponse.json(
-      { message: "Login successful", success: true },
-      { status: 200 }
-    );
+    return response;
   } catch (error) {
     console.error(error);
     return NextResponse.json(
