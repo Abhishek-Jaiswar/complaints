@@ -57,6 +57,7 @@ A modern **Complaints System** built with **Next.js**, **TypeScript**, **Tailwin
 
 - [Resend Email Integration](/docs/resend.md)
 - [Database Connection](/docs/database.md)
+- [User Manual](/docs/howToUse.md)
 
 ## 📌 Getting Started
 
