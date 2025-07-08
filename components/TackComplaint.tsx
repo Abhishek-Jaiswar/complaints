@@ -2,7 +2,7 @@ import React from 'react'
 
 const TackComplaint = () => {
   return (
-    <div>TackComplaint</div>
+    <div>Will be updated soon.</div>
   )
 }
 
