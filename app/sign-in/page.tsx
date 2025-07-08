@@ -37,12 +37,13 @@ const SignIn = () => {
 
             await fetchUser()
 
-            if (response.status === 201) {
+            if (response.data.success) {
+                navigate.refresh();
                 navigate.push('/raise-complaints')
                 toast.success("Logged in successfully")
 
-            } else if (response.status === 200 && response.data.success) {
-                navigate.push('/')
+            } else if (response.status === 200) {
+                navigate.push('/raise-complaints')
                 toast.success("Logged in successfully")
             }
         } catch (error) {
