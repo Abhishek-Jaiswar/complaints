@@ -1,1 +1,0 @@
-# Mongodb Setup Instructions
