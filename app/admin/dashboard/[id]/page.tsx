@@ -28,6 +28,8 @@ export default function ComplaintDetailsPage() {
 
     const [complaint, setComplaint] = useState<IComplaint | null>(null);
     const [status, setStatus] = useState('');
+    const [adminReplyTitle, setAdminReplyTitle] = useState('');
+    const [adminReplyDescription, setAdminReplyDescription] = useState('');
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
@@ -53,7 +55,9 @@ export default function ComplaintDetailsPage() {
             setLoading(true);
             const response = await axios.put('/api/complaints/admin', {
                 complaintId,
-                status
+                status,
+                adminReplyTitle,
+                adminReplyDescription,
             }, {
                 withCredentials: true
             });
@@ -136,7 +140,25 @@ export default function ComplaintDetailsPage() {
                         You can change the status of complaint
                     </Label>
 
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                    <div className='pt-2 flex flex-col gap-2'>
+                        <Label htmlFor="adminReplyTitle">Admin Reply Title</Label>
+                        <Input
+                            id="adminReplyTitle"
+                            value={adminReplyTitle}
+                            onChange={(e) => setAdminReplyTitle(e.target.value)}
+                        />
+                    </div>
+
+                    <div className='pt-2 flex flex-col gap-2'>
+                        <Label htmlFor="adminReplyDescription">Admin Reply Description</Label>
+                        <Textarea
+                            id="adminReplyDescription"
+                            value={adminReplyDescription}
+                            onChange={(e) => setAdminReplyDescription(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 py-2">
                         <Select
                             onValueChange={(value) => setStatus(value)}
                             value={status}>

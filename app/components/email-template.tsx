@@ -16,9 +16,11 @@ interface ComplaintEmailProps {
     mode: 'created' | 'updated';
     title: string;
     description: string;
+    adminReplyTitle?: string;
+    adminReplyDescription?: string;
     category: string;
     priority: string;
-    status: string; 
+    status: string;
     userEmail: string;
 }
 
@@ -30,6 +32,8 @@ export const ComplaintNotificationEmail = ({
     mode,
     title,
     description,
+    adminReplyTitle,
+    adminReplyDescription,
     category,
     priority,
     status,
@@ -44,6 +48,7 @@ export const ComplaintNotificationEmail = ({
                 <Preview>
                     {isCreated ? 'New Complaint Received' : 'Complaint Updated'} - {title}
                 </Preview>
+
                 <Container style={container}>
                     {/* Header */}
                     <Section style={header}>
@@ -58,23 +63,25 @@ export const ComplaintNotificationEmail = ({
 
                     {/* Priority Banner */}
                     <Section style={getPriorityBanner(priority)}>
-                        <Text style={priorityText}>
-                            🚨 {priority.toUpperCase()} PRIORITY
-                        </Text>
+                        <Text style={priorityText}>🚨 {priority.toUpperCase()} PRIORITY</Text>
                     </Section>
 
-                    {/* Main */}
+                    {/* Intro */}
                     <Section style={content}>
                         <Text style={mainHeading}>
-                            {isCreated ? 'A new complaint has been raised' : 'A complaint has been updated'}
+                            {isCreated
+                                ? 'A new complaint has been raised'
+                                : 'Your complaint has been updated'}
                         </Text>
                         <Text style={introText}>
-                            Please check the details below and take the necessary action.
+                            {isCreated
+                                ? 'Please check the details below and take the necessary action.'
+                                : 'The admin has added a reply or updated the status. See the details below.'}
                         </Text>
 
                         <Hr style={hr} />
 
-                        {/* Details */}
+                        {/* Complaint Details */}
                         <Section style={detailsSection}>
                             <Text style={sectionTitle}>Complaint Details</Text>
 
@@ -134,31 +141,60 @@ export const ComplaintNotificationEmail = ({
 
                         <Hr style={hr} />
 
-                        {/* Description */}
                         <Section style={descriptionSection}>
-                            <Text style={sectionTitle}>Description</Text>
+                            <Text style={sectionTitle}>Your Complaint</Text>
                             <div style={descriptionBox}>
                                 <Text style={descriptionText}>{description}</Text>
                             </div>
                         </Section>
 
+                        {!isCreated && (adminReplyTitle || adminReplyDescription) && (
+                            <Section style={descriptionSection}>
+                                <Text style={sectionTitle}>Replies</Text>
+                                <div style={descriptionBox}>
+                                    {adminReplyTitle && (
+                                        <>
+                                            <Text style={descriptionText}>{adminReplyTitle}</Text>
+                                            <Hr style={hr} />
+                                        </>
+                                    )}
+                                    {adminReplyDescription && (
+                                        <Text style={descriptionText}>{adminReplyDescription}</Text>
+                                    )}
+                                </div>
+                            </Section>
+                        )}
+
+
                         <Hr style={hr} />
 
-                        {/* Actions */}
                         <Section style={actionSection}>
                             <Text style={sectionTitle}>Quick Actions</Text>
-                            <Row>
-                                <Column style={buttonColumn}>
-                                    <Link href={`${baseUrl}/admin/complaints`} style={primaryButton}>
-                                        <Text style={primaryButtonText}>Open Dashboard</Text>
-                                    </Link>
-                                </Column>
-                                <Column style={buttonColumn}>
-                                    <Link href={`mailto:${userEmail}`} style={secondaryButton}>
-                                        <Text style={secondaryButtonText}>Reply to User</Text>
-                                    </Link>
-                                </Column>
-                            </Row>
+                            {mode === "updated" ? (
+                                <Row>
+                                    <Column style={buttonColumn}>
+                                        <Link href={`${baseUrl}/raise-complaint`} style={secondaryButton}>
+                                            <Text style={secondaryButtonText}>Track Complaint</Text>
+                                        </Link>
+                                    </Column>
+                                </Row>
+                            ) : (
+
+
+                                <Row>
+                                    <Column style={buttonColumn}>
+                                        <Link href={`${baseUrl}/admin`} style={primaryButton}>
+                                            <Text style={primaryButtonText}>Open Dashboard</Text>
+                                        </Link>
+                                    </Column>
+                                    <Column style={buttonColumn}>
+                                        <Link href={`mailto:${userEmail}`} style={secondaryButton}>
+                                            <Text style={secondaryButtonText}>Reply to User</Text>
+                                        </Link>
+                                    </Column>
+                                </Row>
+                            )}
+
                         </Section>
                     </Section>
 
@@ -166,10 +202,10 @@ export const ComplaintNotificationEmail = ({
                     <Section style={footer}>
                         <Hr style={footerHr} />
                         <Text style={footerText}>
-                            This is an automated notification from ComplaintHub.
+                            This is an automated notification from Complaint.
                         </Text>
                         <Text style={footerSubtext}>
-                            &copy; 2025 ComplaintHub. All rights reserved.
+                            &copy; 2025 Comlaint. All rights reserved.
                         </Text>
                     </Section>
                 </Container>
@@ -178,68 +214,70 @@ export const ComplaintNotificationEmail = ({
     );
 };
 
-// Helper functions for dynamic styling
 const getPriorityBanner = (priority: string) => {
     const colors = {
         High: '#dc2626',
         Medium: '#f59e0b',
-        Low: '#10b981'
+        Low: '#10b981',
     };
     return {
         ...priorityBanner,
-        backgroundColor: colors[priority as keyof typeof colors] || colors.Medium
+        backgroundColor: colors[priority as keyof typeof colors] || colors.Medium,
     };
 };
 
 const getPriorityBadge = (priority: string) => {
-  const colors = {
-    High: '#fee2e2',
-    Medium: '#fef3c7',
-    Low: '#d1fae5',
-  };
+    const colors = {
+        High: '#fee2e2',
+        Medium: '#fef3c7',
+        Low: '#d1fae5',
+    };
 
-  const textColors = {
-    High: '#991b1b',
-    Medium: '#92400e',
-    Low: '#065f46',
-  };
+    const textColors = {
+        High: '#991b1b',
+        Medium: '#92400e',
+        Low: '#065f46',
+    };
 
-  return {
-    ...badge,
-    backgroundColor: colors[priority as keyof typeof colors] || '#fef3c7', 
-    color: textColors[priority as keyof typeof textColors] || '#92400e',  
-  };
+    return {
+        ...badge,
+        backgroundColor: colors[priority as keyof typeof colors] || '#fef3c7',
+        color: textColors[priority as keyof typeof textColors] || '#92400e',
+    };
 };
 
 const getCategoryBadge = () => ({
-  ...badge,
-  backgroundColor: '#e0e7ff',
-  color: '#3730a3',
+    ...badge,
+    backgroundColor: '#e0e7ff',
+    color: '#3730a3',
 });
 
 const getStatusBadge = (status: string) => {
-  const colors = {
-    Pending: '#dbeafe',
-    'In Progress': '#fef3c7',
-    Resolved: '#d1fae5',
-    Closed: '#f3f4f6',
-  };
+    const colors = {
+        Pending: '#dbeafe',
+        'In Progress': '#fef3c7',
+        Resolved: '#d1fae5',
+        Closed: '#f3f4f6',
+    };
 
-  const textColors = {
-    Pending: '#1e40af',
-    'In Progress': '#92400e',
-    Resolved: '#065f46',
-    Closed: '#374151',
-  };
+    const textColors = {
+        Pending: '#1e40af',
+        'In Progress': '#92400e',
+        Resolved: '#065f46',
+        Closed: '#374151',
+    };
 
-  return {
-    ...badge,
-    backgroundColor: colors[status as keyof typeof colors] || '#dbeafe',
-    color: textColors[status as keyof typeof textColors] || '#1e40af',
-  };
+    return {
+        ...badge,
+        backgroundColor: colors[status as keyof typeof colors] || '#dbeafe',
+        color: textColors[status as keyof typeof textColors] || '#1e40af',
+    };
 };
 
 export default ComplaintNotificationEmail;
+
+// ✅ Keep all your style objects here — same as before!
+
 
 // Styles
 const main = {

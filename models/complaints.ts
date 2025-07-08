@@ -7,6 +7,8 @@ export interface IComplaints extends Document {
   priority: string;
   status?: string;
   dateSubmitted: Date;
+  adminReplyTitle: string;
+  adminReplyDescription: string;
 }
 
 const complaintSchema: Schema<IComplaints> = new Schema(
@@ -45,6 +47,12 @@ const complaintSchema: Schema<IComplaints> = new Schema(
       type: String,
       enum: ["pending", "resolved", "in progress"],
       default: "pending",
+    },
+    adminReplyTitle: {
+      type: String,
+    },
+    adminReplyDescription: {
+      type: String,
     },
   },
   { timestamps: true }

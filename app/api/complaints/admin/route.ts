@@ -12,12 +12,10 @@ export async function GET() {
 
     const cookieStore = await cookies();
     const decoded = verifyTokenFromCookies(cookieStore);
+
     if (decoded?.role !== "admin") {
       return NextResponse.json(
-        {
-          message: "Unauthorized",
-          success: false,
-        },
+        { message: "Unauthorized", success: false },
         { status: 401 }
       );
     }
@@ -25,16 +23,13 @@ export async function GET() {
     const complaints = await Complaints.find({});
     return NextResponse.json({
       message: "Complaints fetched successfully",
-      success: false,
+      success: true,
       complaints,
     });
   } catch (error) {
-    console.error("Error fetching complaints: ", error);
+    console.error("Error fetching complaints:", error);
     return NextResponse.json(
-      {
-        message: "Internal server error",
-        success: false,
-      },
+      { message: "Internal server error", success: false },
       { status: 500 }
     );
   }
@@ -47,8 +42,6 @@ export async function PUT(req: NextRequest) {
     const cookieStore = await cookies();
     const decoded = verifyTokenFromCookies(cookieStore);
 
-    console.log("[AUTH] Decoded Token:", decoded);
-
     if (!decoded || decoded.role !== "admin") {
       return NextResponse.json(
         { message: "Unauthorized", success: false },
@@ -56,67 +49,69 @@ export async function PUT(req: NextRequest) {
       );
     }
 
-    const body = await req.json();
-    const { complaintId, status } = body;
+    const { complaintId, status, adminReplyTitle, adminReplyDescription } =
+      await req.json();
 
-    console.log("[REQUEST] complaintId:", complaintId, "New status:", status);
-
-    if (!complaintId || !status) {
+    if (!complaintId) {
       return NextResponse.json(
-        { message: "Complaint ID and status are required", success: false },
+        { message: "Complaint ID is required", success: false },
         { status: 400 }
       );
     }
 
-    // Update complaint in DB
-    const complaint = await Complaints.findByIdAndUpdate(
+    type UpdateFields = Partial<{
+      status: string;
+      title: string;
+      adminReplyTitle: string;
+      adminReplyDescription: string;
+    }>;
+
+    const updateFields: UpdateFields = {};
+    if (status) updateFields.status = status;
+    if (adminReplyTitle) updateFields.adminReplyTitle = adminReplyTitle;
+    if (adminReplyDescription)
+      updateFields.adminReplyDescription = adminReplyDescription;
+
+    const updatedComplaint = await Complaints.findByIdAndUpdate(
       complaintId,
-      { status },
+      updateFields,
       { new: true }
     );
 
-    if (!complaint) {
+    if (!updatedComplaint) {
       return NextResponse.json(
         { message: "Complaint not found", success: false },
         { status: 404 }
       );
     }
+    const userEmail = decoded.email;
 
-    console.log("[DB] Complaint updated:", complaint);
-
-    // Prepare email
+    // ✅ Send notification email (optional)
     const resend = new Resend(process.env.RESEND_API_KEY);
-
-    const userEmail = decoded.email || "admin@example.com";
-
-    const { error } = await resend.emails.send({
+    await resend.emails.send({
       from: "onboarding@resend.dev",
-      to: 'abhishekndxw@gmail.com', // ⚠️ send to user when ready
-      subject: `🔔 Complaint Update: ${complaint.title}`,
+      to: "abhishekndxw@gmail.com",
+      subject: `Complaint Updated: ${updatedComplaint.title}`,
       react: ComplaintNotificationEmail({
         mode: "updated",
-        title: complaint.title,
-        description: complaint.description,
-        category: complaint.category,
-        priority: complaint.priority,
-        status: complaint.status || "Unknown",
-        userEmail: userEmail,
+        title: updatedComplaint.title,
+        description: updatedComplaint.description,
+        adminReplyTitle: updatedComplaint.adminReplyTitle ?? "",
+        adminReplyDescription: updatedComplaint.adminReplyDescription ?? "",
+        category: updatedComplaint.category,
+        priority: updatedComplaint.priority,
+        status: updatedComplaint.status!,
+        userEmail,
       }),
     });
 
-    if (error) {
-      console.error("[EMAIL] Failed to send:", error);
-    } else {
-      console.log("[EMAIL] Sent successfully");
-    }
-
     return NextResponse.json({
-      message: "Complaint updated & email sent",
+      message: "Complaint updated successfully",
       success: true,
-      complaint,
+      complaint: updatedComplaint,
     });
   } catch (error) {
-    console.error("[SERVER ERROR]", error);
+    console.error("Error updating complaint:", error);
     return NextResponse.json(
       { message: "Internal server error", success: false },
       { status: 500 }
