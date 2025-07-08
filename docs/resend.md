@@ -1,10 +1,10 @@
-# 📧 Resend Email Integration
+# Resend Email Integration
 
-This project uses [Resend](https://resend.com/) to send transactional emails when a complaint status changes.
+This project uses [Resend](https://resend.com/) to send transactional emails when a complaint raised or on change status.
 
 ---
 
-## ✅ **Why I Chose Resend**
+## **Why I Chose Resend**
 
 I chose **Resend** because it provides a simple, modern, developer-friendly API for sending transactional emails — without complex SMTP setup or deliverability headaches.
 
@@ -33,7 +33,7 @@ Overall, Resend fits perfectly for projects that need to send reliable notificat
   const { data, error } = await resend.emails.send({
     from: "onboarding@resend.dev", //Default mail from provider
     to: [adminEmail] || "youremail@example.com", // as we dont verify our domain to send emails we are using own verified email
-    subject: `🚨 New ${priority} Priority Complaint: ${title}`,
+    subject: ` New ${priority} Priority Complaint: ${title}`,
     react: ComplaintNotificationEmail({
       title,
       description,
@@ -66,7 +66,7 @@ Overall, Resend fits perfectly for projects that need to send reliable notificat
 
 ---
 
-## ✅ **Using it in code**
+## **Using it in code**
 
 Example usage in `route.ts`:
 
