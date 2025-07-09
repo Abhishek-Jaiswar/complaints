@@ -36,6 +36,11 @@ Here's a guide how you can find admin login page
 - Just add the **/admin**.
 - The admin login will be displayed.
 
+#### How can you access admin panel
+- navigate to /admin
+- enter the following credentials
+- email:  abhishek@gmail.com
+- password: 123456
 #### Note
 
 You can't create account as a admin even if this application has **_RBAC_** authentication model, Here's why.
